@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="mx-auto max-w-xl">
+  <h1 class="text-2xl font-semibold">Notification settings</h1>
+  <p class="mt-2 text-sm text-slate-400">Choose Slack or Discord. Alerts fire only when a site changes between up and down.</p>
+  {% if saved %}
+  <p class="mt-4 rounded-md border border-emerald-800 bg-emerald-950/40 px-3 py-2 text-sm text-emerald-200">Settings saved.</p>
+  {% endif %}
+  {% if error %}
+  <p class="mt-4 rounded-md border border-red-800 bg-red-950/40 px-3 py-2 text-sm text-red-200">{{ error }}</p>
+  {% endif %}
+  <form method="post" action="/settings" class="mt-6 space-y-4">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <fieldset class="space-y-2">
+      <legend class="text-sm text-slate-400">Provider</legend>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="radio" name="notification_provider" value="" {% if not values.notification_provider %}checked{% endif %}>
+        Disabled
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="radio" name="notification_provider" value="slack" {% if values.notification_provider == 'slack' %}checked{% endif %}>
+        Slack incoming webhook
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="radio" name="notification_provider" value="discord" {% if values.notification_provider == 'discord' %}checked{% endif %}>
+        Discord webhook
+      </label>
+    </fieldset>
+    <label class="block text-sm">
+      <span class="text-slate-400">Webhook URL (HTTPS)</span>
+      <input name="webhook_url" value="{{ values.webhook_url }}" placeholder="https://hooks.slack.com/..." class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2">
+    </label>
+    <button class="rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400">Save settings</button>
+  </form>
+</section>
+{% endblock %}

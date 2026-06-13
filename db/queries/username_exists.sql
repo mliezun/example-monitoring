@@ -1,0 +1,4 @@
+SELECT 1
+FROM users
+WHERE username = ? COLLATE NOCASE
+LIMIT 1;

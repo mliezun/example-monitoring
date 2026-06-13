@@ -1,0 +1,63 @@
+services:
+  migrate:
+    build: .
+    command: ["python", "db/apply_migrations.py"]
+    volumes:
+      - db-data:/data
+    environment:
+      DATABASE_PATH: /data/monitoring.db
+
+  web:
+    build: .
+    command: ["python", "-m", "web.main"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+    volumes:
+      - db-data:/data
+    environment:
+      DATABASE_PATH: /data/monitoring.db
+      SECRET_KEY: dev-secret-change-me
+      HOST: 0.0.0.0
+      PORT: "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  poller:
+    build: .
+    command: ["node", "tasks/poller.js"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      web:
+        condition: service_healthy
+    volumes:
+      - db-data:/data
+    environment:
+      DATABASE_PATH: /data/monitoring.db
+      POLL_TICK_MS: "1000"
+
+  e2e:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    depends_on:
+      web:
+        condition: service_healthy
+      poller:
+        condition: service_started
+    volumes:
+      - db-data:/data
+    environment:
+      APP_URL: http://web:8000
+      DATABASE_PATH: /data/monitoring.db
+    profiles:
+      - test
+
+volumes:
+  db-data:

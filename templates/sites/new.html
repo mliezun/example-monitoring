@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="mx-auto max-w-xl">
+  <h1 class="text-2xl font-semibold">Add monitored site</h1>
+  {% if error %}
+  <p class="mt-4 rounded-md border border-red-800 bg-red-950/40 px-3 py-2 text-sm text-red-200">{{ error }}</p>
+  {% endif %}
+  <form method="post" action="/sites/new" class="mt-6 space-y-4">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <label class="block text-sm">
+      <span class="text-slate-400">Display name</span>
+      <input name="name" value="{{ values.name }}" required class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2">
+    </label>
+    <label class="block text-sm">
+      <span class="text-slate-400">HTTPS URL</span>
+      <input name="url" type="url" value="{{ values.url }}" required class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2">
+    </label>
+    <label class="block text-sm">
+      <span class="text-slate-400">Poll interval (seconds, min 30)</span>
+      <input name="poll_interval_seconds" type="number" min="30" value="{{ values.poll_interval_seconds }}" required class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2">
+    </label>
+    <label class="block text-sm">
+      <span class="text-slate-400">OK status codes (comma-separated)</span>
+      <input name="ok_status_codes" value="{{ values.ok_status_codes }}" required class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2">
+    </label>
+    <label class="block text-sm">
+      <span class="text-slate-400">Attempts per poll cycle</span>
+      <input name="max_retries" type="number" min="1" value="{{ values.max_retries }}" required class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2">
+    </label>
+    <div class="flex gap-3">
+      <button class="rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400">Save</button>
+      <a href="/sites" class="rounded-lg border border-slate-700 px-4 py-2 hover:bg-slate-900">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

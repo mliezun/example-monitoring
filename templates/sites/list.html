@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-semibold">Monitored sites</h1>
+  <a href="/sites/new" class="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-emerald-400">Add site</a>
+</div>
+
+{% if sites %}
+<table class="mt-6 w-full overflow-hidden rounded-lg border border-slate-800 text-left text-sm">
+  <thead class="bg-slate-900 text-slate-400">
+    <tr>
+      <th class="px-4 py-3">Name</th>
+      <th class="px-4 py-3">URL</th>
+      <th class="px-4 py-3">Status</th>
+      <th class="px-4 py-3">Interval</th>
+      <th class="px-4 py-3">Last checked</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for site in sites %}
+    <tr class="border-t border-slate-800 hover:bg-slate-900/50">
+      <td class="px-4 py-3"><a href="/sites/{{ site.id }}" class="font-medium text-emerald-400 hover:underline">{{ site.name }}</a></td>
+      <td class="px-4 py-3 text-slate-400">{{ site.url }}</td>
+      <td class="px-4 py-3">
+        {% if site.current_status == 'up' %}
+        <span class="rounded-full bg-emerald-500/20 px-2 py-1 text-emerald-300">up</span>
+        {% elif site.current_status == 'down' %}
+        <span class="rounded-full bg-red-500/20 px-2 py-1 text-red-300">down</span>
+        {% else %}
+        <span class="rounded-full bg-slate-700 px-2 py-1 text-slate-300">unknown</span>
+        {% endif %}
+      </td>
+      <td class="px-4 py-3">{{ site.poll_interval_seconds }}s</td>
+      <td class="px-4 py-3 text-slate-400">{{ site.last_checked_at or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="mt-8 rounded-lg border border-dashed border-slate-700 px-4 py-8 text-center text-slate-400">
+  No sites yet. <a href="/sites/new" class="text-emerald-400 hover:underline">Add your first HTTPS endpoint</a>.
+</p>
+{% endif %}
+{% endblock %}

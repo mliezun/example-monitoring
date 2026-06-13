@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <a href="/sites" class="text-sm text-slate-400 hover:text-white">← All sites</a>
+    <h1 class="mt-2 text-2xl font-semibold">{{ site.name }}</h1>
+    <p class="mt-1 text-slate-400">{{ site.url }}</p>
+  </div>
+  <form method="post" action="/sites/{{ site.id }}/delete" onsubmit="return confirm('Remove this site?');">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <button class="rounded-lg border border-red-800 px-4 py-2 text-sm text-red-300 hover:bg-red-950/40">Remove site</button>
+  </form>
+</div>
+
+<dl class="mt-6 grid gap-4 rounded-lg border border-slate-800 bg-slate-900/40 p-4 sm:grid-cols-2 lg:grid-cols-4">
+  <div><dt class="text-xs uppercase text-slate-500">Status</dt><dd class="mt-1 font-medium">{{ site.current_status }}</dd></div>
+  <div><dt class="text-xs uppercase text-slate-500">Interval</dt><dd class="mt-1">{{ site.poll_interval_seconds }}s</dd></div>
+  <div><dt class="text-xs uppercase text-slate-500">OK codes</dt><dd class="mt-1">{{ site.ok_status_codes }}</dd></div>
+  <div><dt class="text-xs uppercase text-slate-500">Attempts</dt><dd class="mt-1">{{ site.max_retries }}</dd></div>
+</dl>
+
+<h2 class="mt-10 text-lg font-semibold">Poll history</h2>
+<div
+  id="poll-history"
+  hx-get="/sites/{{ site.id }}/history"
+  hx-trigger="every 60s"
+  hx-swap="innerHTML"
+>
+  {% include "sites/_history.html" %}
+</div>
+{% endblock %}

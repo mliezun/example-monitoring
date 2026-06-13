@@ -1,0 +1,23 @@
+FROM ruby:3.3-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      chromium \
+      chromium-driver \
+      build-essential \
+      curl \
+      ca-certificates \
+      libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CHROME_PATH=/usr/bin/chromium
+ENV APP_URL=http://web:8000
+ENV DATABASE_PATH=/data/monitoring.db
+
+WORKDIR /tests
+COPY tests/e2e/Gemfile tests/e2e/Gemfile.lock* ./
+RUN bundle install
+
+COPY tests/e2e/ ./
+
+CMD ["./run.sh"]
