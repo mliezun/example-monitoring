@@ -3,7 +3,11 @@
 # Design goal: specs read like short stories —
 #   register → add site → wait until poller writes a row → assert on facts
 module MonitoringHelpers
-  HTTPBIN = "https://httpbin.org".freeze
+  MOCK_HTTPS = ENV.fetch("MOCK_HTTPS_BASE", "https://mock-https:8443").freeze
+
+  def mock_status_url(code)
+    "#{MOCK_HTTPS}/status/#{code}"
+  end
 
   def monitoring_db
     @monitoring_db ||= begin

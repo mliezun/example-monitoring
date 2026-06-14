@@ -1,0 +1,8 @@
+{
+  "name": "example-monitoring-mock-https",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "selfsigned": "^2.4.1"
+  }
+}
