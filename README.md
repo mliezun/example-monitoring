@@ -1,5 +1,7 @@
 # example-monitoring
 
+[![CI](https://github.com/mliezun/example-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/mliezun/example-monitoring/actions/workflows/ci.yml)
+
 Proof-of-concept uptime monitor for the blog post [Web services for the AI era](https://mliezun.github.io/). Layers are split so the service can be rewritten (Python → Rust) without touching SQL, templates, or the JS poller.
 
 ## Layout
