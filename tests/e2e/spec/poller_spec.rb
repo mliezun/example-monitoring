@@ -2,18 +2,17 @@ require_relative "spec_helper"
 
 # Background poller integration tests.
 #
-# These specs talk to the real SQLite database and rely on the running Node
-# poller service. httpbin.org simulates HTTP success and failure — no custom
-# mock server required.
+# Uses the in-compose mock HTTPS server (tests/mock-https) so CI does not depend
+# on external httpbin.org availability.
 RSpec.describe "Background poller", type: :integration do
   before do
     register_fresh_account
   end
 
-  it "marks a site UP when httpbin returns 200" do
+  it "marks a site UP when the endpoint returns 200" do
     site_name = add_monitored_site(
-      name: "Healthy httpbin",
-      url: "https://httpbin.org/status/200",
+      name: "Healthy endpoint",
+      url: mock_status_url(200),
       retries: 1,
     )
 
@@ -30,8 +29,8 @@ RSpec.describe "Background poller", type: :integration do
 
   it "marks a site DOWN after all retry attempts fail" do
     site_name = add_monitored_site(
-      name: "Broken httpbin",
-      url: "https://httpbin.org/status/503",
+      name: "Broken endpoint",
+      url: mock_status_url(503),
       ok_codes: "200",
       retries: 3,
     )
@@ -42,16 +41,15 @@ RSpec.describe "Background poller", type: :integration do
     end
 
     expect(result["poll_status"]).to eq("down")
+    expect(result["http_status_code"]).to eq(503)
     expect(result["attempts_used"]).to eq(3)
     expect(result["current_status"]).to eq("down")
-    # httpbin may answer 503 or fail entirely from CI runners; both are valid DOWN signals
-    expect([503, nil]).to include(result["http_status_code"])
   end
 
   it "detects a status change when the endpoint starts failing" do
     site_name = add_monitored_site(
-      name: "Flaky httpbin",
-      url: "https://httpbin.org/status/200",
+      name: "Flaky endpoint",
+      url: mock_status_url(200),
       retries: 1,
     )
 
@@ -60,7 +58,7 @@ RSpec.describe "Background poller", type: :integration do
       row if row&.dig("poll_status") == "up"
     end
 
-    set_site_url(site_name, "https://httpbin.org/status/500")
+    set_site_url(site_name, mock_status_url(500))
 
     result = wait_until("poller records DOWN after URL starts returning 500") do
       row = poll_row(site_name)
@@ -68,6 +66,6 @@ RSpec.describe "Background poller", type: :integration do
     end
 
     expect(result["current_status"]).to eq("down")
-    expect([500, nil]).to include(result["http_status_code"])
+    expect(result["http_status_code"]).to eq(500)
   end
 end

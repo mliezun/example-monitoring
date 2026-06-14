@@ -41,6 +41,14 @@ services:
     environment:
       DATABASE_PATH: /data/monitoring.db
       POLL_TICK_MS: "1000"
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+
+  mock-https:
+    build:
+      context: .
+      dockerfile: tests/mock-https/Dockerfile
+    profiles:
+      - test
 
   e2e:
     build:
@@ -51,11 +59,14 @@ services:
         condition: service_healthy
       poller:
         condition: service_started
+      mock-https:
+        condition: service_started
     volumes:
       - db-data:/data
     environment:
       APP_URL: http://web:8000
       DATABASE_PATH: /data/monitoring.db
+      MOCK_HTTPS_BASE: https://mock-https:8443
     profiles:
       - test
 

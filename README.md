@@ -38,7 +38,7 @@ Run end-to-end tests (Cuprite inside Compose):
 docker compose --profile test run --rm e2e
 ```
 
-This runs both UI specs and **background poller** integration specs. Poller tests use [httpbin.org](https://httpbin.org) for controllable HTTP responses (`/status/200`, `/status/503`, etc.) and assert directly against SQLite poll history.
+This runs both UI specs and **background poller** integration specs. Poller tests use the in-compose mock HTTPS server (`tests/mock-https`) so CI does not depend on external httpbin.org.
 
 ### Test layout
 
