@@ -1,3 +1,10 @@
+FROM rust:1.87-bookworm AS web-builder
+
+WORKDIR /build/web
+COPY web/Cargo.toml web/Cargo.lock ./
+COPY web/src ./src
+RUN cargo build --release
+
 FROM python:3.13-slim
 
 RUN apt-get update \
@@ -24,12 +31,13 @@ COPY package.json package-lock.json* ./
 RUN npm install --omit=dev
 
 COPY . .
+COPY --from=web-builder /build/web/target/release/example-monitoring-web /app/web/example-monitoring-web
 
-ENV PYTHONPATH=/app
+ENV APP_ROOT=/app
 ENV DATABASE_PATH=/data/monitoring.db
 ENV HOST=0.0.0.0
 ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["python", "-m", "web.main"]
+CMD ["/app/web/example-monitoring-web"]

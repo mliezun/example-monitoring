@@ -1,0 +1,28 @@
+[package]
+name = "example-monitoring-web"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "example-monitoring-web"
+path = "src/main.rs"
+
+[dependencies]
+axum = "0.7"
+hex = "0.4"
+hmac = "0.12"
+http = "1"
+minijinja = "2"
+pbkdf2 = "0.12"
+rand = "0.8"
+regex = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+subtle = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+tower-http = { version = "0.5", features = ["set-header"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+url = "2"

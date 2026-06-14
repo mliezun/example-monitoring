@@ -5,3 +5,4 @@ __pycache__/
 .env
 .git
 tests/e2e/.rspec_status
+web/target/
